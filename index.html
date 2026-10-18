@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#2b1b5a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Множилкові Підземелля</title>
+<style>
+:root{--bg1:#2b1b5a;--bg2:#4a2f8f;--card:#ffffff18;--accent:#ffd84d;--good:#47e08a;--bad:#ff5f6d;--ink:#fff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{margin:0;height:100%;background:linear-gradient(160deg,var(--bg1),var(--bg2));color:var(--ink);font-family:"Trebuchet MS",system-ui,sans-serif;overflow:hidden}
+#app{height:100%;max-width:560px;margin:0 auto;padding:max(12px,env(safe-area-inset-top)) 14px max(12px,env(safe-area-inset-bottom));display:flex;flex-direction:column}
+h1{margin:6px 0;font-size:26px;text-align:center;text-shadow:0 3px 0 #0005}
+h2{margin:4px 0 10px;font-size:20px}
+.sub{opacity:.8;text-align:center;font-size:14px;margin-bottom:8px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:bold}
+.pill{background:var(--card);border-radius:20px;padding:6px 12px;font-size:15px}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+.btn{background:var(--accent);color:#3a2600;font-weight:bold;font-size:18px;padding:14px 18px;border-radius:16px;box-shadow:0 5px 0 #b78f00;width:100%}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #b78f00}
+.btn.sec{background:#ffffff26;color:#fff;box-shadow:0 5px 0 #0004}
+.scroll{flex:1;overflow-y:auto;padding:2px 0 10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.region{background:var(--card);border-radius:18px;padding:12px;text-align:left;border:2px solid transparent}
+.region.sel{border-color:var(--accent)}
+.region .e{font-size:34px}.region .n{font-weight:bold;margin-top:2px}
+.bar{height:8px;background:#0004;border-radius:6px;overflow:hidden;margin-top:6px}
+.bar>i{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
+.modes{display:flex;gap:8px;margin:8px 0}
+.modes button{flex:1;padding:10px 4px;border-radius:12px;background:var(--card);font-weight:bold;font-size:14px;border:2px solid transparent}
+.modes button.sel{border-color:var(--accent);background:#ffd84d33}
+/* battle */
+.hearts{font-size:22px;letter-spacing:2px}
+.arena{flex:0 0 auto;text-align:center;position:relative;margin-top:6px}
+.monster{font-size:92px;line-height:1.1;display:inline-block;transition:transform .15s}
+.monster.hit{animation:hit .4s}.monster.die{animation:die .6s forwards}.monster.atk{animation:atk .4s}
+@keyframes hit{0%,100%{transform:translateX(0)}25%{transform:translateX(-14px) rotate(-6deg);filter:brightness(2)}75%{transform:translateX(14px) rotate(6deg)}}
+@keyframes die{to{transform:scale(0) rotate(360deg);opacity:0}}
+@keyframes atk{50%{transform:scale(1.25)}}
+.hpbar{height:14px;width:70%;margin:0 auto;background:#0006;border-radius:10px;overflow:hidden}
+.hpbar>i{display:block;height:100%;background:linear-gradient(90deg,#ff5f6d,#ffb347);width:100%;transition:width .3s}
+.timer{height:6px;background:#0004;border-radius:6px;overflow:hidden;margin:10px 0 4px}
+.timer>i{display:block;height:100%;background:var(--accent);width:100%}
+.q{font-size:54px;font-weight:bold;text-align:center;margin:6px 0 2px;text-shadow:0 3px 0 #0005}
+.ans{font-size:40px;text-align:center;min-height:56px;background:#0004;border-radius:14px;padding:4px;margin:4px 0 8px;letter-spacing:3px}
+.ans.good{background:#47e08a55}.ans.bad{background:#ff5f6d55}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:auto}
+.pad button{font-size:28px;font-weight:bold;padding:12px 0;border-radius:14px;background:#ffffff26;box-shadow:0 4px 0 #0005}
+.pad button:active{transform:translateY(3px);box-shadow:0 1px 0 #0005}
+.pad .ok{background:var(--good);color:#06371b}.pad .del{background:#ff5f6d99}
+.combo{position:absolute;right:0;top:0;font-weight:bold;color:var(--accent);font-size:22px}
+.float{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-weight:bold;font-size:26px;color:var(--accent);animation:fl 1s forwards;pointer-events:none;text-shadow:0 2px 0 #0007}
+@keyframes fl{to{transform:translate(-50%,-70px);opacity:0}}
+.hint{background:#0006;border-radius:14px;padding:10px;margin:6px 0;text-align:center;font-size:17px}
+.dots{display:inline-grid;gap:3px;margin:6px 0}
+.dots i{width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.dots i.b{background:#6ec7ff}
+.card{background:var(--card);border-radius:18px;padding:16px;text-align:center;margin:8px 0}
+.big{font-size:70px}
+.coll{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.cr{background:var(--card);border-radius:12px;padding:6px 2px;text-align:center;font-size:30px}
+.cr small{display:block;font-size:11px;opacity:.85}
+.cr.lock{filter:grayscale(1) brightness(.5)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:5px;text-align:center}
+tr:nth-child(even){background:#ffffff10}
+.weak{color:#ff9aa2}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+// ====== Дані ======
+const REGIONS=[
+  {id:'r2',n:'Печера двійок',e:'🦇',f:[2]},
+  {id:'r3',n:'Ліс трійок',e:'🌲',f:[3]},
+  {id:'r4',n:'Болото четвірок',e:'🐸',f:[4]},
+  {id:'r5',n:'Гори п’ятірок',e:'⛰️',f:[5]},
+  {id:'r6',n:'Пустеля шісток',e:'🏜️',f:[6]},
+  {id:'r7',n:'Острів сімок',e:'🏝️',f:[7]},
+  {id:'r8',n:'Крижана вісімка',e:'🧊',f:[8]},
+  {id:'r9',n:'Вулкан дев’яток',e:'🌋',f:[9]},
+  {id:'r10',n:'Фабрика десяток',e:'🏭',f:[10]},
+  {id:'mix',n:'Замок Короля Мікс',e:'🏰',f:[2,3,4,5,6,7,8,9,10],boss:true}
+];
+const MON=['👹','👻','🐲','🦖','🐙','🕷️','🧟','🐺','🦂','🦇','🐍','👾','🤖','🦑','🐗','🦈','🧌','🐊','🦅','🐛'];
+const NAMES=['Гризун','Бульбашко','Вогнедих','Ґрімм','Щупик','Павучок','Зомбік','Вовчок','Жалко','Кажан','Змійко','Інопланетик','Роботик','Кальмар','Кабан','Акулка','Троль','Крок','Орел','Гусінь'];
+const KEY='mnozhylka.v1';
+let S=load();
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.facts)return s}catch(e){}
+  return {facts:{},coins:0,streak:0,last:'',days:{},best:0,sound:true,mode:'battle',region:'r2',played:0}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const fk=(a,b)=>a<=b?a+'x'+b:b+'x'+a;
+const allFacts=[];for(let a=2;a<=10;a++)for(let b=a;b<=10;b++)allFacts.push([a,b]);
+const fstat=k=>S.facts[k]||(S.facts[k]={box:0,seen:0,ok:0,t:0});
+const mastered=k=>{const f=S.facts[k];return f&&f.box>=3};
+const regionFacts=r=>allFacts.filter(([a,b])=>r.f.length>=9||r.f.includes(a)||r.f.includes(b));
+const regionPct=r=>{const l=regionFacts(r);return Math.round(100*l.filter(([a,b])=>mastered(fk(a,b))).length/l.length)};
+const $=s=>document.querySelector(s);
+const app=$('#app');
+const rnd=n=>Math.floor(Math.random()*n);
+const today=()=>new Date().toISOString().slice(0,10);
+
+// ====== Звук ======
+let ac;function beep(f,d=.12,t='sine',v=.15){if(!S.sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+  const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(ac.destination);
+  o.start();g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.stop(ac.currentTime+d)}catch(e){}}
+const sGood=()=>{beep(660,.1);setTimeout(()=>beep(880,.15),90)};
+const sBad=()=>{beep(180,.3,'sawtooth',.12)};
+const sWin=()=>[523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.2),i*120));
+
+// ====== Вибір завдань (адаптивне повторення) ======
+function pickFact(list,last){
+  const W=[5,4,2.5,1.2,.4];
+  const w=list.map(([a,b])=>{const f=S.facts[fk(a,b)];let x=f?(f.seen?W[Math.min(f.box,4)]:6):6;
+    if(f&&f.seen&&f.t>6000)x*=1.5; if(fk(a,b)===last)x=0;return x});
+  let t=w.reduce((s,x)=>s+x,0),r=Math.random()*t;
+  for(let i=0;i<list.length;i++){r-=w[i];if(r<=0)return list[i]}
+  return list[0];
+}
+
+// ====== Екрани ======
+function menu(){
+  const d=today();
+  let streakNote='';
+  const reg=REGIONS.find(r=>r.id===S.region)||REGIONS[0];
+  const tamed=allFacts.filter(([a,b])=>mastered(fk(a,b))).length;
+  app.innerHTML=`
+  <div class="top"><span class="pill">🪙 ${S.coins}</span><span class="pill">🔥 ${S.streak} дн.</span><span class="pill" id="snd">${S.sound?'🔊':'🔇'}</span></div>
+  <h1>⚔️ Множилкові Підземелля</h1>
+  <div class="sub">Вивчено прикладів: <b>${tamed}</b> з ${allFacts.length} · приручено Множиків</div>
+  <div class="modes">
+    <button data-m="battle" class="${S.mode==='battle'?'sel':''}">⚔️ Бій</button>
+    <button data-m="chest" class="${S.mode==='chest'?'sel':''}">🧰 Скриня<br><small>?×6=42</small></button>
+    <button data-m="mixed" class="${S.mode==='mixed'?'sel':''}">🎲 Мікс</button>
+  </div>
+  <div class="scroll"><div class="grid">${REGIONS.map(r=>`
+    <button class="region ${S.region===r.id?'sel':''}" data-r="${r.id}">
+      <div class="e">${r.e}</div><div class="n">${r.n}</div>
+      <div class="bar"><i style="width:${regionPct(r)}%"></i></div></button>`).join('')}</div></div>
+  <button class="btn" id="go">▶ Вирушити: ${reg.n}</button>
+  <div style="display:flex;gap:8px;margin-top:10px">
+    <button class="btn sec" id="col" style="font-size:15px;padding:10px">📖 Колекція</button>
+    <button class="btn sec" id="stat" style="font-size:15px;padding:10px">👨‍👩‍👧 Для батьків</button>
+  </div>`;
+  app.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{S.region=b.dataset.r;save();menu()});
+  app.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{S.mode=b.dataset.m;save();menu()});
+  $('#go').onclick=()=>startBattle(reg);
+  $('#col').onclick=collection;$('#stat').onclick=stats;
+  $('#snd').onclick=()=>{S.sound=!S.sound;save();menu()};
+}
+
+let B=null,timerId=null;
+function startBattle(reg){
+  B={reg,list:regionFacts(reg),mi:rnd(MON.length),hp:0,maxHp:reg.boss?10:5,hearts:3,combo:0,done:0,wins:0,coins:0,
+     q:null,input:'',t0:0,locked:false,last:'',correct:0,total:0,retry:[]};
+  B.hp=B.maxHp;
+  if(S.last!==today()){const y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.streak=(S.last===y)?S.streak+1:1;S.last=today();save()}
+  nextQ();
+}
+function newMonster(){B.mi=rnd(MON.length);B.hp=B.maxHp;}
+function nextQ(){
+  let f;
+  if(B.retry.length&&Math.random()<.5)f=B.retry.shift();else f=pickFact(B.list,B.last);
+  let [a,b]=f;if(Math.random()<.5)[a,b]=[b,a];
+  B.last=fk(a,b);
+  const chest=S.mode==='chest'||(S.mode==='mixed'&&Math.random()<.4);
+  B.q={a,b,p:a*b,chest,f};
+  B.input='';B.locked=false;B.t0=Date.now();
+  drawBattle();
+  startTimer();
+}
+function drawBattle(msg){
+  const q=B.q;
+  const qt=q.chest?`${q.a} × <span style="color:var(--accent)">?</span> = ${q.p}`:`${q.a} × ${q.b}`;
+  app.innerHTML=`
+  <div class="top"><button class="pill" id="back">✖</button><span class="hearts">${'❤️'.repeat(B.hearts)}${'🖤'.repeat(3-B.hearts)}</span><span class="pill">🪙 ${B.coins}</span></div>
+  <div class="arena">
+    <div class="combo">${B.combo>1?'🔥×'+B.combo:''}</div>
+    <div class="monster" id="mon">${B.reg.boss?'👑':''}${MON[B.mi]}</div>
+    <div class="hpbar"><i id="hp" style="width:${100*B.hp/B.maxHp}%"></i></div>
+    <div style="font-size:13px;opacity:.8;margin-top:2px">${NAMES[B.mi]}${B.reg.boss?' — Бос':''}</div>
+  </div>
+  <div class="timer"><i id="tm"></i></div>
+  <div class="q">${qt}</div>
+  <div class="ans" id="ans">${B.input||'&nbsp;'}</div>
+  <div id="hintbox"></div>
+  <div class="pad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-n="${n}">${n}</button>`).join('')}
+    <button class="del" id="del">⌫</button><button data-n="0">0</button><button class="ok" id="ok">✔</button></div>`;
+  app.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>press(b.dataset.n));
+  $('#del').onclick=()=>{if(B.locked)return;B.input=B.input.slice(0,-1);$('#ans').innerHTML=B.input||'&nbsp;'};
+  $('#ok').onclick=submit;
+  $('#back').onclick=()=>{stopTimer();menu()};
+}
+function press(n){if(B.locked||B.input.length>=3)return;B.input+=n;$('#ans').textContent=B.input;beep(400+n*30,.05,'square',.05)}
+document.addEventListener('keydown',e=>{
+  if(!B||!$('#ok')||B.locked)return;
+  if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==='Backspace'){B.input=B.input.slice(0,-1);$('#ans').innerHTML=B.input||'&nbsp;'}
+  else if(e.key==='Enter')submit();
+});
+function startTimer(){
+  stopTimer();const el=$('#tm');if(!el)return;const dur=12000,t0=Date.now();
+  timerId=setInterval(()=>{const e=$('#tm');if(!e){stopTimer();return}
+    const p=Math.max(0,1-(Date.now()-t0)/dur);e.style.width=p*100+'%';e.style.background=p<.3?'var(--bad)':'var(--accent)'},100);
+}
+function stopTimer(){if(timerId){clearInterval(timerId);timerId=null}}
+function float(t){const a=$('.arena');if(!a)return;const d=document.createElement('div');d.className='float';d.textContent=t;a.appendChild(d);setTimeout(()=>d.remove(),1000)}
+
+function submit(){
+  if(B.locked||B.input==='')return;
+  B.locked=true;stopTimer();
+  const q=B.q,ms=Date.now()-B.t0,val=+B.input,right=q.chest?q.b:q.p;
+  const k=fk(q.a,q.b),f=fstat(k);f.seen++;B.total++;
+  const ans=$('#ans');
+  if(val===right){
+    B.correct++;f.ok++;f.t=f.t?Math.round(f.t*.6+ms*.4):ms;
+    const fast=ms<=4000;
+    if(fast)f.box=Math.min(4,f.box+1);else if(f.box<2)f.box++;
+    B.combo++;let dmg=1,coin=1+(fast?1:0)+(B.combo>=3?1:0);
+    if(B.combo>=5)dmg=2;
+    B.hp=Math.max(0,B.hp-dmg);B.coins+=coin;S.coins+=coin;
+    const dk=today();S.days[dk]=(S.days[dk]||0)+1;
+    ans.classList.add('good');sGood();float(fast?`⚡ +${coin}🪙`:`+${coin}🪙`);
+    $('#mon').classList.add('hit');$('#hp').style.width=100*B.hp/B.maxHp+'%';
+    save();
+    if(B.hp<=0){setTimeout(()=>{$('#mon').classList.add('die');sWin()},300);B.wins++;B.coins+=3;S.coins+=3;save();
+      setTimeout(()=>{B.wins>=(B.reg.boss?2:3)?victory():(newMonster(),nextQ())},1000)}
+    else setTimeout(nextQ,650);
+  }else{
+    f.box=0;B.combo=0;B.hearts--;B.retry.push(q.f);
+    ans.classList.add('bad');sBad();$('#mon').classList.add('atk');
+    save();
+    $('.hearts').textContent='❤️'.repeat(B.hearts)+'🖤'.repeat(3-B.hearts);
+    $('#hintbox').innerHTML=hint(q.a,q.b);
+    $('.pad').style.display='none';
+    const ok=document.createElement('button');ok.className='btn';ok.style.marginTop='auto';ok.textContent=B.hearts<=0?'Далі':'Зрозуміло! 👍';
+    ok.onclick=()=>{B.hearts<=0?defeat():nextQ()};app.appendChild(ok);
+  }
+}
+function hint(a,b){
+  const p=a*b;const lo=Math.min(a,b),hi=Math.max(a,b);
+  let txt,cols=hi,rows=lo,dots='';
+  if(hi>5){const s=hi-5;txt=`${lo} × ${hi} = ${lo}×5 + ${lo}×${s} = ${lo*5} + ${lo*s} = <b>${p}</b>`;
+    for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)dots+=`<i class="${c>=5?'b':''}"></i>`;}
+  else{txt=`${lo} × ${hi} = ${Array(lo).fill(hi).join(' + ')} = <b>${p}</b>`;
+    for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)dots+=`<i></i>`}
+  if(a===9||b===9){const o=a===9?b:a;txt+=`<br>💡 ×9: ${o}×10 − ${o} = ${o*10} − ${o} = ${p}`}
+  return `<div class="hint">Правильно: <b>${a} × ${b} = ${p}</b><br>${txt}<br><div class="dots" style="grid-template-columns:repeat(${cols},12px)">${dots}</div><br>💡 Також ${b} × ${a} = ${p}</div>`;
+}
+function victory(){
+  stopTimer();S.played++;save();
+  const acc=B.total?Math.round(100*B.correct/B.total):0;
+  app.innerHTML=`<div style="margin:auto;text-align:center">
+    <div class="big">🏆</div><h1>Перемога!</h1>
+    <div class="card">Монстрів переможено: <b>${B.wins}</b><br>Точність: <b>${acc}%</b><br>Зароблено: <b>${B.coins} 🪙</b><br>Регіон освоєно на <b>${regionPct(B.reg)}%</b></div>
+    <button class="btn" id="again">⚔️ Ще раз</button><br><br><button class="btn sec" id="m">Карта</button></div>`;
+  sWin();$('#again').onclick=()=>startBattle(B.reg);$('#m').onclick=menu;
+}
+function defeat(){
+  stopTimer();
+  app.innerHTML=`<div style="margin:auto;text-align:center">
+    <div class="big">💫</div><h1>Не страшно!</h1>
+    <div class="card">Ти відбив монстрів: <b>${B.wins}</b><br>Помилки — це тренування.<br>Спробуй ще раз, ми розібрали складні приклади разом.</div>
+    <button class="btn" id="again">⚔️ Спробувати знову</button><br><br><button class="btn sec" id="m">Карта</button></div>`;
+  $('#again').onclick=()=>startBattle(B.reg);$('#m').onclick=menu;
+}
+function collection(){
+  const cells=allFacts.map(([a,b],i)=>{const k=fk(a,b),m=mastered(k);
+    return `<div class="cr ${m?'':'lock'}">${MON[(a*7+b*3)%MON.length]}<small>${a}×${b}${m?'='+a*b:''}</small></div>`}).join('');
+  const n=allFacts.filter(([a,b])=>mastered(fk(a,b))).length;
+  app.innerHTML=`<div class="top"><button class="pill" id="b">← Назад</button><span class="pill">${n}/${allFacts.length}</span></div>
+  <h2>📖 Колекція Множиків</h2><div class="sub">Приборкай Множика: відповідай швидко й правильно кілька разів</div>
+  <div class="scroll"><div class="coll">${cells}</div></div>`;
+  $('#b').onclick=menu;
+}
+function stats(){
+  const rows=allFacts.map(([a,b])=>{const f=S.facts[fk(a,b)];return {a,b,f}}).filter(r=>r.f&&r.f.seen);
+  const weak=rows.filter(r=>r.f.box<=1).sort((x,y)=>(x.f.ok/x.f.seen)-(y.f.ok/y.f.seen)).slice(0,10);
+  const seen=rows.reduce((s,r)=>s+r.f.seen,0),ok=rows.reduce((s,r)=>s+r.f.ok,0);
+  const days=Object.keys(S.days).sort().slice(-7);
+  const tamed=allFacts.filter(([a,b])=>mastered(fk(a,b))).length;
+  app.innerHTML=`<div class="top"><button class="pill" id="b">← Назад</button></div>
+  <h2>👨‍👩‍👧 Для батьків</h2>
+  <div class="scroll">
+  <div class="card" style="text-align:left">Вивчено прикладів: <b>${tamed} з ${allFacts.length}</b><br>Загалом відповідей: <b>${seen}</b>, правильних: <b>${seen?Math.round(100*ok/seen):0}%</b><br>Серія днів: <b>${S.streak}</b><br>Критерій «вивчено»: кілька швидких (≤4 с) правильних відповідей.</div>
+  <h2>Найскладніші приклади</h2>
+  ${weak.length?`<table><tr><th>Приклад</th><th>Точність</th><th>Час</th></tr>${weak.map(r=>`<tr><td class="weak">${r.a}×${r.b}</td><td>${Math.round(100*r.f.ok/r.f.seen)}%</td><td>${(r.f.t/1000).toFixed(1)} с</td></tr>`).join('')}</table>`:'<div class="sub">Поки немає даних — пограйте кілька боїв.</div>'}
+  <h2>Відповідей по днях</h2>
+  ${days.length?`<table>${days.map(d=>`<tr><td>${d}</td><td>${S.days[d]}</td></tr>`).join('')}</table>`:'<div class="sub">—</div>'}
+  <br><button class="btn sec" id="reset" style="font-size:14px;padding:10px">Скинути прогрес</button></div>`;
+  $('#b').onclick=menu;
+  $('#reset').onclick=()=>{if(confirm('Скинути весь прогрес?')){localStorage.removeItem(KEY);S=load();menu()}};
+}
+menu();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>

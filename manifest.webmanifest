@@ -1,0 +1,16 @@
+{
+  "name": "Множилкові Підземелля",
+  "short_name": "Множилка",
+  "description": "Тренажер таблиці множення для дітей 8–12 років",
+  "lang": "uk",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2b1b5a",
+  "theme_color": "#2b1b5a",
+  "icons": [
+    {"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}
